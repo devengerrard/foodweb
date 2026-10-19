@@ -1,4 +1,4 @@
-# Food Web v0.4 (prototipe akademik)
+# Catering Oma
 
 Website pemesanan catering. **Login wajib** untuk menu, preferensi, checkout, dan status pesanan.
 Publik hanya: Home, About, More, Login, Register.
