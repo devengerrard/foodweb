@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Admin · Pesanan{% endblock %}
+{% block content %}
+<h1>Dashboard Pengelola</h1>
+<div class="toolbar">
+  <a class="btn {{ '' if not status else 'secondary' }} small" href="{{ url_for('admin_orders') }}">Semua</a>
+  {% for k, label in PAY_STATUS.items() %}
+    <a class="btn {{ '' if status == k else 'secondary' }} small" href="{{ url_for('admin_orders', status=k) }}">{{ label }}</a>
+  {% endfor %}
+</div>
+{% if not orders %}
+  <div class="empty">Tidak ada pesanan.</div>
+{% else %}
+<table class="table">
+  <thead><tr><th>Referensi</th><th>Pemesan</th><th>Tanggal</th><th>Total</th><th>Alergi</th><th>Status</th></tr></thead>
+  <tbody>
+  {% for o in orders %}
+    <tr>
+      <td><a href="{{ url_for('admin_order', ref=o.ref) }}">{{ o.ref }}</a></td>
+      <td>{{ o.contact_name }}<br><small class="muted">@{{ o.username }}</small></td>
+      <td>{{ o.event_date|tgl }}</td>
+      <td>{{ o.total|rupiah }}</td>
+      <td>{% if o.allergy_text %}<span class="badge rejected">⚠ {{ o.allergy_text }}</span>{% else %}-{% endif %}</td>
+      <td><span class="badge {{ o.pay_status }}">{{ o.pay_status|status_label }}</span></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% endblock %}

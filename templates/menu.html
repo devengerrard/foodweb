@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Menu{% endblock %}
+{% block content %}
+<h1>Menu catering</h1>
+<div class="toolbar">
+  {% if filtering %}
+    <a class="btn secondary" href="{{ url_for('menu') }}">Tampilkan semua menu</a>
+  {% else %}
+    <a class="btn" href="{{ url_for('menu', filter=1) }}">Saring sesuai preferensi saya</a>
+  {% endif %}
+  <a class="btn secondary" href="{{ url_for('preferences') }}">Ubah preferensi</a>
+  <a class="btn" href="{{ url_for('checkout') }}">Lanjut ke pesanan{% if cart_count %} ({{ cart_count }}){% endif %}</a>
+</div>
+
+{% if filtering %}
+  <div class="flash info">
+    Disaring berdasarkan:
+    {% if prefs.tastes %}rasa {{ prefs.tastes|map('title')|join(', ') }};{% endif %}
+    {% if prefs.diets %}diet {% for d in prefs.diets %}{{ DIETS[d] }}{% if not loop.last %}, {% endif %}{% endfor %};{% endif %}
+    {% if prefs.has_allergy %}bebas alergi: {{ prefs.allergy_text }}{% endif %}
+    {% if not (prefs.tastes or prefs.diets or prefs.has_allergy) %}belum ada preferensi dipilih{% endif %}
+  </div>
+  {% if prefs.has_allergy %}
+    <div class="flash warn"><strong>Penting:</strong> penyaringan alergi hanya berdasarkan data bahan yang tercatat dan <strong>bukan jaminan makanan aman</strong>. Konfirmasi kepada pihak catering sebelum dikonsumsi.</div>
+  {% endif %}
+{% endif %}
+
+{% if not menus %}
+  <div class="empty">
+    <p>Tidak ada menu yang cocok dengan preferensi Anda.</p>
+    <a class="btn" href="{{ url_for('preferences') }}">Ubah preferensi</a>
+    <a class="btn secondary" href="{{ url_for('menu') }}">Kembali ke katalog</a>
+  </div>
+{% endif %}
+
+<div class="grid">
+{% for m in menus %}
+  <article class="card">
+    <div class="tile {{ m.taste }}">
+      <span class="t-name">{{ TASTES[m.taste] }}</span>
+      <span class="t-price">{{ m.price|rupiah }}<small>/porsi</small></span>
+    </div>
+    <div class="body">
+      <h3>{{ m.name }}</h3>
+      <p class="muted">{{ m.description }}</p>
+      {% if m.diet_list %}<p class="tags">{% for d in m.diet_list %}<span class="tag">{{ DIETS[d] }}</span>{% endfor %}</p>{% endif %}
+      {% if m.allergen_known %}
+        <p class="allergen">Alergen: {{ m.allergens or 'tidak ada alergen utama tercatat' }}</p>
+      {% else %}
+        <p class="allergen warn-text"><strong>Data alergen belum lengkap.</strong> Konfirmasi ke pihak catering sebelum memesan.</p>
+      {% endif %}
+      <form method="post" action="{{ url_for('cart_add') }}" class="row">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <input type="hidden" name="menu_id" value="{{ m.id }}">
+        <label class="sr" for="qty{{ m.id }}">Jumlah porsi</label>
+        <input id="qty{{ m.id }}" class="qty" type="number" name="qty" min="{{ MIN_QTY }}" max="{{ MAX_QTY }}" step="1" value="{{ MIN_QTY }}" required>
+        <button class="btn small" type="submit">Tambah</button>
+      </form>
+    </div>
+  </article>
+{% endfor %}
+</div>
+<p class="muted small-text">Minimal {{ MIN_QTY }} porsi per menu.</p>
+{% endblock %}

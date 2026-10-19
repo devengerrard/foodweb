@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Riwayat Pesanan{% endblock %}
+{% block content %}
+<h1>Riwayat Pesanan</h1>
+{% if not orders %}
+  <div class="empty"><p>Belum ada pesanan.</p><a class="btn" href="{{ url_for('menu') }}">Lihat menu</a></div>
+{% else %}
+<table class="table">
+  <thead><tr><th>Referensi</th><th>Tanggal</th><th>Total</th><th>Status</th></tr></thead>
+  <tbody>
+  {% for o in orders %}
+    <tr>
+      <td><a href="{{ url_for('order_detail', ref=o.ref) }}">{{ o.ref }}</a></td>
+      <td>{{ o.event_date|tgl }}</td>
+      <td>{{ o.total|rupiah }}</td>
+      <td><span class="badge {{ o.pay_status }}">{{ o.pay_status|status_label }}</span></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% endblock %}

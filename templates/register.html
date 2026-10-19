@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Daftar{% endblock %}
+{% block content %}
+<section class="narrow">
+  <h1>Daftar Akun</h1>
+  {% if errors %}<div class="flash err"><ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul></div>{% endif %}
+  <form method="post" class="form" autocomplete="on">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <label for="username">Username</label>
+    <input id="username" name="username" value="{{ form.username or '' }}" required minlength="3" maxlength="30" pattern="[A-Za-z0-9_]+" autocomplete="username">
+    <label for="full_name">Nama lengkap</label>
+    <input id="full_name" name="full_name" value="{{ form.full_name or '' }}" required maxlength="60" autocomplete="name">
+    <label for="phone">Nomor telepon</label>
+    <input id="phone" name="phone" value="{{ form.phone or '' }}" required inputmode="tel" maxlength="25" autocomplete="tel" placeholder="08123456789">
+    <label for="password">Password (min. 8 karakter, huruf dan angka)</label>
+    <input id="password" name="password" type="password" required minlength="8" maxlength="128" autocomplete="new-password">
+    <label for="password2">Ulangi password</label>
+    <input id="password2" name="password2" type="password" required maxlength="128" autocomplete="new-password">
+    <button class="btn" type="submit">Daftar</button>
+  </form>
+  <p>Sudah punya akun? <a href="{{ url_for('login') }}">Masuk</a></p>
+</section>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Admin · {{ o.ref }}{% endblock %}
+{% block content %}
+<h1>Pesanan <span class="ref">{{ o.ref }}</span></h1>
+<p><span class="badge {{ o.pay_status }}">{{ o.pay_status|status_label }}</span> · akun <strong>@{{ o.username }}</strong></p>
+
+{% if o.allergy_text %}
+  <div class="alert-box big"><strong>⚠ ALERGI:</strong> {{ o.allergy_text }}</div>
+{% else %}
+  <p class="muted">Alergi: tidak ada.</p>
+{% endif %}
+
+<table class="table">
+  <thead><tr><th>Menu</th><th>Harga</th><th>Porsi</th><th>Subtotal</th></tr></thead>
+  <tbody>
+  {% for i in items %}
+    <tr><td>{{ i.menu_name }}</td><td>{{ i.unit_price|rupiah }}</td><td>{{ i.qty }}</td><td>{{ (i.unit_price * i.qty)|rupiah }}</td></tr>
+  {% endfor %}
+  </tbody>
+  <tfoot><tr><th colspan="3">Total</th><th>{{ o.total|rupiah }}</th></tr></tfoot>
+</table>
+
+<dl class="details">
+  <dt>Pemesan</dt><dd>{{ o.contact_name }}</dd>
+  <dt>Kontak</dt><dd>{{ o.contact_phone }}</dd>
+  <dt>Tanggal</dt><dd>{{ o.event_date|tgl }}</dd>
+  <dt>Permintaan khusus</dt><dd>{{ o.special_request or '-' }}</dd>
+  <dt>Dibuat</dt><dd>{{ o.created_at|wib }}</dd>
+  <dt>Konfirmasi pelanggan</dt><dd>{{ o.confirmed_at|wib if o.confirmed_at else '-' }}</dd>
+  <dt>Catatan pelanggan</dt><dd>{{ o.payer_note or '-' }}</dd>
+  <dt>Verifikasi</dt><dd>{{ o.verified_at|wib if o.verified_at else '-' }}{% if o.admin_note %} · {{ o.admin_note }}{% endif %}</dd>
+</dl>
+
+{% if o.pay_status == 'awaiting_verification' %}
+<form method="post" action="{{ url_for('admin_verify', ref=o.ref) }}" class="form">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <p class="muted">Cocokkan mutasi/dana masuk di aplikasi merchant dengan total dan nomor referensi sebelum menerima.</p>
+  <label for="admin_note">Catatan (opsional)</label>
+  <input id="admin_note" name="admin_note" maxlength="200">
+  <div class="row">
+    <button class="btn" name="action" value="approve" type="submit">Terima pembayaran</button>
+    <button class="btn danger-btn" name="action" value="reject" type="submit">Tolak</button>
+  </div>
+</form>
+{% else %}
+  <p class="muted">Status pembayaran hanya dapat diubah saat "Menunggu verifikasi".</p>
+{% endif %}
+<p><a href="{{ url_for('admin_orders') }}">&larr; Daftar pesanan</a></p>
+{% endblock %}

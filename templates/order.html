@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Pesanan {{ o.ref }}{% endblock %}
+{% block content %}
+<h1>Pesanan <span class="ref">{{ o.ref }}</span></h1>
+<p><span class="badge {{ o.pay_status }}">{{ o.pay_status|status_label }}</span></p>
+
+{% if o.pay_status == 'awaiting_payment' %}
+  <div class="flash info">Pembayaran belum dikonfirmasi. <a href="{{ url_for('order_pay', ref=o.ref) }}">Lanjut ke pembayaran</a></div>
+{% elif o.pay_status == 'awaiting_verification' %}
+  <div class="flash info">Konfirmasi Anda diterima ({{ o.confirmed_at|wib }}). Pengelola akan memeriksa pembayaran.</div>
+{% elif o.pay_status == 'paid' %}
+  <div class="flash ok">Pembayaran terverifikasi pada {{ o.verified_at|wib }}.</div>
+{% elif o.pay_status == 'rejected' %}
+  <div class="flash err">Pembayaran ditolak pada {{ o.verified_at|wib }}.{% if o.admin_note %} Catatan pengelola: {{ o.admin_note }}{% endif %} Hubungi pengelola catering untuk tindak lanjut.</div>
+{% endif %}
+
+<table class="table">
+  <thead><tr><th>Menu</th><th>Harga</th><th>Porsi</th><th>Subtotal</th></tr></thead>
+  <tbody>
+  {% for i in items %}
+    <tr><td>{{ i.menu_name }}</td><td>{{ i.unit_price|rupiah }}</td><td>{{ i.qty }}</td><td>{{ (i.unit_price * i.qty)|rupiah }}</td></tr>
+  {% endfor %}
+  </tbody>
+  <tfoot><tr><th colspan="3">Total</th><th>{{ o.total|rupiah }}</th></tr></tfoot>
+</table>
+
+<dl class="details">
+  <dt>Pemesan</dt><dd>{{ o.contact_name }}</dd>
+  <dt>Kontak</dt><dd>{{ o.contact_phone }}</dd>
+  <dt>Tanggal</dt><dd>{{ o.event_date|tgl }}</dd>
+  <dt>Permintaan khusus</dt><dd>{{ o.special_request or '-' }}</dd>
+  <dt>Dibuat</dt><dd>{{ o.created_at|wib }}</dd>
+</dl>
+{% if o.allergy_text %}<div class="alert-box"><strong>⚠ Alergi:</strong> {{ o.allergy_text }}</div>{% endif %}
+<p><a href="{{ url_for('orders') }}">&larr; Riwayat pesanan</a></p>
+{% endblock %}

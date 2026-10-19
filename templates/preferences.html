@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Preferensi{% endblock %}
+{% block content %}
+<section class="narrow">
+  <h1>Preferensi Makanan</h1>
+  {% if errors %}<div class="flash err"><ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul></div>{% endif %}
+  <form method="post" class="form">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+
+    <fieldset class="alert-box">
+      <legend>Alergi</legend>
+      <label class="check"><input type="radio" name="has_allergy" value="0" {% if not prefs.has_allergy %}checked{% endif %}> Tidak punya</label>
+      <label class="check"><input type="radio" name="has_allergy" value="1" {% if prefs.has_allergy %}checked{% endif %}> Punya</label>
+      <div id="allergy-box" {% if not prefs.has_allergy %}hidden{% endif %}>
+        <label for="allergy_text">Sebutkan alergi (pisahkan dengan koma)</label>
+        <input id="allergy_text" name="allergy_text" maxlength="200" value="{{ prefs.allergy_text }}" placeholder="contoh: kacang, udang">
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Preferensi rasa</legend>
+      {% for k, label in TASTES.items() %}
+        <label class="check"><input type="checkbox" name="tastes" value="{{ k }}" {% if k in prefs.tastes %}checked{% endif %}> {{ label }}</label>
+      {% endfor %}
+    </fieldset>
+
+    <fieldset>
+      <legend>Preferensi diet</legend>
+      {% for k, label in DIETS.items() %}
+        <label class="check"><input type="checkbox" name="diets" value="{{ k }}" {% if k in prefs.diets %}checked{% endif %}> {{ label }}</label>
+      {% endfor %}
+    </fieldset>
+
+    <button class="btn" type="submit">Simpan &amp; lihat menu</button>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Ringkasan Pesanan{% endblock %}
+{% block content %}
+<h1>Ringkasan Pesanan</h1>
+<p class="muted">Periksa kembali sebelum pesanan dikirim.</p>
+
+<table class="table">
+  <thead><tr><th>Menu</th><th>Harga</th><th>Porsi</th><th>Subtotal</th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+    <tr><td>{{ r.menu.name }}</td><td>{{ r.menu.price|rupiah }}</td><td>{{ r.qty }}</td><td>{{ r.subtotal|rupiah }}</td></tr>
+  {% endfor %}
+  </tbody>
+  <tfoot><tr><th colspan="3">Total</th><th>{{ total|rupiah }}</th></tr></tfoot>
+</table>
+
+<dl class="details">
+  <dt>Pemesan</dt><dd>{{ draft.name }}</dd>
+  <dt>Kontak</dt><dd>{{ draft.phone }}</dd>
+  <dt>Tanggal</dt><dd>{{ draft.date|tgl }}</dd>
+  <dt>Permintaan khusus</dt><dd>{{ draft.special or '-' }}</dd>
+</dl>
+{% if draft.allergy %}
+  <div class="alert-box"><strong>⚠ Alergi:</strong> {{ draft.allergy }}</div>
+{% else %}
+  <p class="muted">Alergi: tidak ada.</p>
+{% endif %}
+
+<form method="post" class="row">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <a class="btn secondary" href="{{ url_for('checkout') }}">Ubah</a>
+  <button class="btn" type="submit">Buat pesanan &amp; bayar</button>
+</form>
+{% endblock %}

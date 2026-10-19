@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Pembayaran {{ o.ref }}{% endblock %}
+{% block content %}
+<h1>Pembayaran</h1>
+<div class="pay-grid">
+  <section class="card center">
+    <p class="badge sim">SIMULASI AKADEMIK</p>
+    <img class="qris" src="{{ url_for('static', filename='qris_demo.svg') }}" alt="QRIS simulasi (bukan kode pembayaran sungguhan)" width="260" height="260">
+    <p class="muted small-text">Gambar ini hanya contoh dan bukan kode merchant yang sah. QRIS statis tidak dibuat unik per transaksi.</p>
+  </section>
+  <section>
+    <dl class="details">
+      <dt>Nomor referensi</dt><dd><strong class="ref">{{ o.ref }}</strong></dd>
+      <dt>Total bayar</dt><dd><strong>{{ o.total|rupiah }}</strong></dd>
+      <dt>Status</dt><dd><span class="badge {{ o.pay_status }}">{{ o.pay_status|status_label }}</span></dd>
+    </dl>
+    <ol>
+      <li>Buka aplikasi pembayaran yang mendukung QRIS.</li>
+      <li>Pindai kode QR dan bayar sebesar total di atas.</li>
+      <li>Cantumkan nomor referensi <strong>{{ o.ref }}</strong> bila ada kolom catatan.</li>
+      <li>Kembali ke halaman ini dan tekan <em>Sudah Bayar</em>.</li>
+    </ol>
+    {% if o.pay_status == 'awaiting_payment' %}
+      <form method="post" action="{{ url_for('order_confirm', ref=o.ref) }}" class="form">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <label for="payer_note">Catatan (opsional, mis. nama pengirim / jam bayar)</label>
+        <input id="payer_note" name="payer_note" maxlength="200">
+        <button class="btn" type="submit">Sudah Bayar</button>
+        <p class="muted small-text">Tombol ini hanya mengirim konfirmasi. Pesanan dianggap lunas setelah diverifikasi pengelola.</p>
+      </form>
+    {% else %}
+      <a class="btn" href="{{ url_for('order_detail', ref=o.ref) }}">Lihat status pesanan</a>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

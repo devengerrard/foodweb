@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}More{% endblock %}
+{% block content %}
+<section class="narrow">
+  <h1>Informasi &amp; Ketentuan</h1>
+  <h3>Pembayaran QRIS</h3>
+  <p>QRIS pada prototipe ini adalah <strong>simulasi</strong> dan bukan kode merchant sungguhan. QRIS statis tidak memberi tahu website secara otomatis, sehingga status pembayaran diperiksa manual oleh pengelola.</p>
+  <h3>Alergi</h3>
+  <p>Hasil penyaringan menu tidak menjamin makanan aman. Selalu konfirmasi alergi Anda langsung kepada pihak catering.</p>
+  <h3>Data pribadi</h3>
+  <p>Kami hanya menyimpan data yang diperlukan untuk memproses pesanan: nama, nomor telepon, preferensi, dan rincian pesanan.</p>
+  <h3>Ketentuan pesanan</h3>
+  <ul>
+    <li>Minimal {{ MIN_QTY }} porsi per menu, maksimal {{ MAX_QTY }}.</li>
+    <li>Tanggal pesanan minimal H+1.</li>
+  </ul>
+</section>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}Checkout{% endblock %}
+{% block content %}
+<h1>Checkout</h1>
+{% if errors %}<div class="flash err">
+  <ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>
+</div>{% endif %}
+<form method="post" class="form wide" id="checkout-form">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+
+  <h3>Menu dipilih</h3>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Menu</th>
+        <th>Harga</th>
+        <th>Porsi</th>
+        <th>Subtotal</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr class="cart-row" data-price="{{ r.menu.price }}">
+        <td>{{ r.menu.name }}</td>
+        <td>{{ r.menu.price|rupiah }}</td>
+        <td>
+          <input class="qty" type="number" name="qty_{{ r.menu.id }}" min="{{ MIN_QTY }}" max="{{ MAX_QTY }}" step="1"
+            value="{{ r.qty }}" required aria-label="Porsi {{ r.menu.name }}">
+        </td>
+        <td class="subtotal" data-subtotal="{{ r.subtotal }}">
+          {{ r.subtotal|rupiah }}
+        </td>
+        <td>
+          <button class="linklike danger" type="button" onclick="removeMenu('{{ r.menu.id }}')">
+            Hapus
+          </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+
+    <tfoot>
+      <tr>
+        <th colspan="3">Total</th>
+        <th colspan="2" id="cart-total" data-total="{{ total }}">
+          {{ total|rupiah }}
+        </th>
+      </tr>
+    </tfoot>
+  </table>
+  <p><a href="{{ url_for('menu') }}">+ Tambah menu lain</a></p>
+
+  <h3>Data pemesan</h3>
+  <label for="name">Nama pemesan</label>
+  <input id="name" name="name" value="{{ form.name }}" required maxlength="60">
+  <label for="phone">Kontak (telepon/WhatsApp)</label>
+  <input id="phone" name="phone" value="{{ form.phone }}" required inputmode="tel" maxlength="25">
+  <label for="date">Tanggal pesanan</label>
+  <input id="date" name="date" type="date" value="{{ form.date }}" min="{{ min_date }}" max="{{ max_date }}" required>
+
+  <fieldset class="alert-box">
+    <legend>Alergi</legend>
+    <label for="allergy">Isi jika ada alergi (kosongkan jika tidak ada)</label>
+    <input id="allergy" name="allergy" value="{{ form.allergy }}" maxlength="200" placeholder="contoh: kacang, udang">
+  </fieldset>
+
+  <label for="special">Permintaan khusus</label>
+  <textarea id="special" name="special" rows="3" maxlength="500">{{ form.special }}</textarea>
+
+  <button class="btn" type="submit">Periksa ringkasan</button>
+</form>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const checkoutForm = document.getElementById("checkout-form");
+
+    checkoutForm.addEventListener("keydown", function (event) {
+      if (event.key === "Enter" && event.target.matches(".qty")) {
+        event.preventDefault();
+        updatePrices();
+      }
+    }, true);
+
+    window.removeMenu = function (menuId) {
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = checkoutForm.dataset.removeUrl;
+
+      const csrf = checkoutForm.querySelector('[name="_csrf"]');
+
+      const csrfInput = document.createElement("input");
+      csrfInput.type = "hidden";
+      csrfInput.name = "_csrf";
+      csrfInput.value = csrf.value;
+      form.appendChild(csrfInput);
+
+      const menuInput = document.createElement("input");
+      menuInput.type = "hidden";
+      menuInput.name = "menu_id";
+      menuInput.value = menuId;
+      form.appendChild(menuInput);
+
+      document.body.appendChild(form);
+      form.submit();
+    };
+
+    const rows = document.querySelectorAll(".cart-row");
+    const totalElement = document.getElementById("cart-total");
+
+    const formatter = new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0
+    });
+
+    function updatePrices() {
+      let total = 0;
+
+      rows.forEach(function (row) {
+        const price = Number(row.dataset.price);
+        const qty = Number(row.querySelector(".qty").value) || 0;
+        const subtotal = price * qty;
+
+        row.querySelector(".subtotal").textContent =
+          formatter.format(subtotal);
+
+        total += subtotal;
+      });
+
+      totalElement.textContent = formatter.format(total);
+    }
+
+    window.updatePrices = updatePrices;
+
+    checkoutForm.querySelectorAll(".qty").forEach(function (input) {
+      input.addEventListener("input", updatePrices);
+    });
+  });
+</script>
+{% endblock %}

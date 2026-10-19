@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <h1>Catering yang paham selera</h1>
+    <p class="lead">Atur alergi, rasa, dan diet sekali saja. Menu langsung tersaring, dan pesanan tercatat rapi sampai
+      ke dapur.</p>
+    <div class="actions">
+      {% if current_user %}
+      <a class="btn" href="{{ url_for('menu') }}">Lihat menu</a>
+      <a class="btn secondary" href="{{ url_for('preferences') }}">Atur preferensi</a>
+      {% else %}
+      <a class="btn" href="{{ url_for('register') }}">Daftar gratis</a>
+      <a class="btn secondary" href="{{ url_for('login') }}">Masuk</a>
+      {% endif %}
+    </div>
+    {% if not current_user %}<p class="note">Menu dan pemesanan hanya bisa dibuka setelah login.</p>{% endif %}
+  </div>
+
+  <div class="hero-art">
+    <svg viewBox="0 0 440 360" role="img" aria-label="Kotak makan berisi nasi, telur, sayur, dan sambal">
+      <rect x="10" y="10" width="420" height="340" rx="46" fill="#2B4BEE" stroke="#0E1B4D" stroke-width="5" />
+      <g class="pop c1">
+        <rect x="34" y="34" width="230" height="190" rx="28" fill="#FFFFFF" stroke="#0E1B4D" stroke-width="4" />
+        <path d="M72 196 Q149 66 226 196 Z" fill="#FFF4DC" stroke="#0E1B4D" stroke-width="4" stroke-linejoin="round" />
+        <g fill="#0E1B4D">
+          <ellipse cx="128" cy="160" rx="7" ry="3.5" transform="rotate(-25 128 160)" />
+          <ellipse cx="156" cy="140" rx="7" ry="3.5" transform="rotate(20 156 140)" />
+          <ellipse cx="170" cy="170" rx="7" ry="3.5" transform="rotate(-10 170 170)" />
+          <ellipse cx="116" cy="184" rx="7" ry="3.5" transform="rotate(15 116 184)" />
+          <ellipse cx="190" cy="186" rx="7" ry="3.5" transform="rotate(-20 190 186)" />
+        </g>
+      </g>
+      <g class="pop c2">
+        <rect x="276" y="34" width="130" height="190" rx="28" fill="#DCE5FF" stroke="#0E1B4D" stroke-width="4" />
+        <ellipse cx="316" cy="100" rx="22" ry="40" transform="rotate(-28 316 100)" fill="#2B4BEE" stroke="#0E1B4D"
+          stroke-width="4" />
+        <ellipse cx="364" cy="120" rx="22" ry="40" transform="rotate(24 364 120)" fill="#FFFFFF" stroke="#0E1B4D"
+          stroke-width="4" />
+        <ellipse cx="340" cy="178" rx="24" ry="32" transform="rotate(-8 340 178)" fill="#FFF4DC" stroke="#0E1B4D"
+          stroke-width="4" />
+      </g>
+      <g class="pop c3">
+        <rect x="34" y="236" width="150" height="98" rx="28" fill="#FFF4DC" stroke="#0E1B4D" stroke-width="4" />
+        <circle cx="109" cy="285" r="35" fill="#FFFFFF" stroke="#0E1B4D" stroke-width="4" />
+        <circle cx="109" cy="285" r="15" fill="#FBE6B5" stroke="#0E1B4D" stroke-width="3" />
+      </g>
+      <g class="pop c4">
+        <rect x="196" y="236" width="210" height="98" rx="28" fill="#FFFFFF" stroke="#0E1B4D" stroke-width="4" />
+        <rect x="222" y="262" width="104" height="46" rx="23" fill="#FBE6B5" stroke="#0E1B4D" stroke-width="4" />
+        <circle cx="366" cy="285" r="19" fill="#2B4BEE" stroke="#0E1B4D" stroke-width="4" />
+      </g>
+    </svg>
+    <div class="sticker" aria-hidden="true">Mulai<br>{{ MIN_QTY }} porsi</div>
+  </div>
+</section>
+
+<section class="bento" aria-label="Cara memesan">
+  <article class="tile-step t1">
+    <div class="no" aria-hidden="true">1</div>
+    <h2>Atur preferensi</h2>
+    <p>Alergi, rasa (asin, manis, pedas), dan diet. Tersimpan di akunmu untuk pesanan berikutnya.</p>
+  </article>
+  <article class="tile-step t2">
+    <div class="no" aria-hidden="true">2</div>
+    <h2>Pilih menu dan porsi</h2>
+    <p>Total harga dihitung otomatis oleh sistem.</p>
+  </article>
+  <article class="tile-step t3">
+    <div class="no" aria-hidden="true">3</div>
+    <h2>Bayar lewat QRIS</h2>
+    <p>Pengelola catering memverifikasi pembayaran secara manual.</p>
+  </article>
+</section>
+{% endblock %}
