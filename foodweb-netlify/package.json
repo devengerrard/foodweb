@@ -1,0 +1,12 @@
+{
+  "name": "foodweb-netlify",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Catering Oma migrated to Netlify Functions and Supabase PostgreSQL",
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.57.0",
+    "jose": "^6.1.0"
+  }
+}
